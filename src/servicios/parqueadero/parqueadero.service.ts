@@ -19,8 +19,8 @@ export class ParqueaderoService implements OnModuleInit {
   ) {
   }
 
-  onModuleInit(): void {
-    this.parqueaderoPorDefecto();
+  onModuleInit(): Promise<void> {
+    return this.parqueaderoPorDefecto();
   }
 
   public obtenerParqueadero() {
@@ -66,8 +66,8 @@ export class ParqueaderoService implements OnModuleInit {
     );
   }
 
-  private async parqueaderoPorDefecto(): Promise<void> {
-    await this._parqueaderoRepository.inicializarParqueadero();
+  private parqueaderoPorDefecto(): Promise<void> {
+    return this._parqueaderoRepository.inicializarParqueadero();
   }
 
   private validarPicoYPlaca(placa: string): void {

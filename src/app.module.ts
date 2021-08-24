@@ -15,7 +15,8 @@ import { HttpExceptionFilter } from './config/http-exception.filter';
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
     },
-    ParqueaderoService],
+    ParqueaderoService,
+  ],
 })
 export class AppModule {
 }

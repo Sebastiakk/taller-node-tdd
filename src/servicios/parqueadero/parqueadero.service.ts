@@ -23,7 +23,7 @@ export class ParqueaderoService implements OnModuleInit {
     return this.parqueaderoPorDefecto();
   }
 
-  public obtenerParqueadero() {
+  obtenerParqueadero(): Promise<ParqueaderoModel> {
     return this._parqueaderoRepository.obtenerInformacionParqueo()
       .then((i: any) => new ParqueaderoModel({
         ...i,
@@ -31,14 +31,14 @@ export class ParqueaderoService implements OnModuleInit {
       }));
   }
 
-  public async parquearVehiculo(vehiculo: ParquearVehiculoDto) {
+  async parquearVehiculo(vehiculo: ParquearVehiculoDto) {
     this.validarPicoYPlaca(vehiculo.placa);
     await this.validarCupos();
     const vehiculoModel = new VehiculoModel(vehiculo.tipo, vehiculo.cilindraje, vehiculo.placa);
     return this._parqueaderoRepository.parquearVehiculo(vehiculoModel);
   }
 
-  public async salidaVehiculo(placa: string, horas: number) {
+  async salidaVehiculo(placa: string, horas: number) {
     let totalCobrar = 0;
     const vehiculo = await this._vehiculoParqueadoRepository.obtenerVehiculoPorPlaca(placa);
     if (!vehiculo) {
@@ -59,25 +59,25 @@ export class ParqueaderoService implements OnModuleInit {
     return { totalCobrar };
   }
 
-  private cuposDisponibles(parqueadero: ParqueaderoEntity): ParqueaderoCupoModel {
+  cuposDisponibles(parqueadero: ParqueaderoEntity): ParqueaderoCupoModel {
     const motos = (parqueadero.maxCupos.moto - parqueadero.vehiculoParqueado.filter(i => i.tipo === 'Moto').length);
     const carros = (parqueadero.maxCupos.carro - parqueadero.vehiculoParqueado.filter(i => i.tipo === 'Carro').length);
     return new ParqueaderoCupoModel({ motos, carros },
     );
   }
 
-  private parqueaderoPorDefecto(): Promise<void> {
+  parqueaderoPorDefecto(): Promise<void> {
     return this._parqueaderoRepository.inicializarParqueadero();
   }
 
-  private validarPicoYPlaca(placa: string): void {
+  validarPicoYPlaca(placa: string): void {
     const ultimoDigitoPlaca = placa.substr(-1);
     if (Number(ultimoDigitoPlaca) === PICO_Y_PLACA_HOY) {
       throw new Error(MENSAJE_ERRORES.VEHICULO_CON_PICO_Y_PLACA(placa));
     }
   }
 
-  private async validarCupos(): Promise<void> {
+  async validarCupos(): Promise<void> {
     const parqueadero = await this.obtenerParqueadero();
     if (
       parqueadero.cuposDisponibles.motos === 0 ||
